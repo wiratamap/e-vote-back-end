@@ -1,9 +1,9 @@
 package com.personal.evote.lookup.candidate.service;
 
+import com.personal.evote.factory.lookup.candidate.CandidateFactory;
 import com.personal.evote.lookup.candidate.exception.CandidateNotFoundException;
 import com.personal.evote.lookup.candidate.model.Candidate;
 import com.personal.evote.lookup.candidate.repository.CandidateRepository;
-import com.personal.evote.lookup.candidatecategory.model.CandidateCategory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -15,7 +15,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CandidateServiceTest {
@@ -26,22 +25,10 @@ public class CandidateServiceTest {
     @Mock
     private CandidateRepository candidateRepository;
 
-    private Candidate availableCandidate() {
-        CandidateCategory candidateCategory = CandidateCategory.builder()
-                .name("Presidential")
-                .description("Executive")
-                .build();
-
-        return Candidate.builder()
-                .candidateNumber(1)
-                .candidateCategory(candidateCategory)
-                .build();
-    }
-
     @Test
     public void fetch_expectReturnCandidate_whenCandidateDataIsAvailable() {
         UUID availableCandidateId = UUID.randomUUID();
-        Candidate expectedCandidate = availableCandidate();
+        Candidate expectedCandidate = CandidateFactory.construct().get();
 
         Mockito.when(candidateRepository.findById(availableCandidateId)).thenReturn(Optional.ofNullable(expectedCandidate));
 
@@ -51,7 +38,7 @@ public class CandidateServiceTest {
     }
 
     @Test(expected = CandidateNotFoundException.class)
-    public void fetch_expectReturnNull_whenCandidateDataIsNotAvailable() {
+    public void fetch_expectThrowException_whenCandidateDataIsNotAvailable() {
         UUID candidateToBeSearch = UUID.randomUUID();
 
         Mockito.when(candidateRepository.findById(candidateToBeSearch)).thenReturn(Optional.empty());

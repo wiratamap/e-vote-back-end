@@ -1,7 +1,9 @@
 package com.personal.evote.core.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -15,6 +17,8 @@ import java.util.UUID;
 @Data
 @Builder
 @EntityListeners(AuditingEntityListener.class)
+@NoArgsConstructor
+@AllArgsConstructor
 public class RunningVote {
     @Id
     @GeneratedValue(generator = "UUID")
@@ -29,6 +33,9 @@ public class RunningVote {
 
     @Column
     private UUID candidateId;
+
+    @Column
+    private UUID candidateCategoryId;
 
     @Column
     @CreatedDate

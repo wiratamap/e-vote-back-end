@@ -1,9 +1,7 @@
 package com.personal.evote.lookup.candidatecategory.model;
 
 import com.personal.evote.common.base.model.AuditModel;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,6 +12,8 @@ import javax.persistence.Table;
 @Table(schema = "schema_lookup")
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CandidateCategory extends AuditModel {
     @Column
     private String name;
