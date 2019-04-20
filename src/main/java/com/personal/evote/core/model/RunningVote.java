@@ -31,6 +31,9 @@ public class RunningVote {
     private UUID candidateId;
 
     @Column
+    private UUID candidateCategoryId;
+
+    @Column
     @CreatedDate
     private LocalDateTime createdDate;
 }

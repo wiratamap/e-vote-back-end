@@ -12,6 +12,7 @@ public class RunningVoteFactory {
         runningVote = RunningVote.builder()
                 .voterId(UUID.randomUUID())
                 .candidateId(UUID.randomUUID())
+                .candidateCategoryId(UUID.randomUUID())
                 .build();
 
         return new RunningVoteFactory();
@@ -24,6 +25,11 @@ public class RunningVoteFactory {
 
     public RunningVoteFactory candidateId(UUID candidateId) {
         runningVote.setCandidateId(candidateId);
+        return this;
+    }
+
+    public RunningVoteFactory candidateCategoryId(UUID candidateCategoryId) {
+        runningVote.setCandidateCategoryId(candidateCategoryId);
         return this;
     }
 

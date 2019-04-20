@@ -1,5 +1,6 @@
 package com.personal.evote.core.service;
 
+import com.personal.evote.core.exception.IllegalVoterException;
 import com.personal.evote.core.model.RunningVote;
 import com.personal.evote.core.model.dto.VoteDto;
 import com.personal.evote.core.repository.RunningVoteRepository;
@@ -16,6 +17,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Collections;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
@@ -48,7 +51,11 @@ public class VoteServiceTest {
 
         Mockito.when(candidateService.fetch(candidateId)).thenReturn(existingCandidate);
 
-        RunningVote expectedRunningVote = RunningVoteFactory.construct().voterId(voterId).candidateId(candidateId).get();
+        RunningVote expectedRunningVote = RunningVoteFactory.construct()
+                .voterId(voterId)
+                .candidateId(candidateId)
+                .candidateCategoryId(existingCandidate.getCandidateCategory().getId())
+                .get();
 
         RunningVote savedRunningVote = voteService.vote(voteDto);
 
@@ -62,6 +69,23 @@ public class VoteServiceTest {
         VoteDto voteDto = new VoteDto(voterId, candidateId);
 
         Mockito.when(candidateService.fetch(candidateId)).thenThrow(CandidateNotFoundException.class);
+
+        voteService.vote(voteDto);
+    }
+
+    @Test(expected = IllegalVoterException.class)
+    public void vote_expectThrowException_whenVoterAlreadyVotedOnSameElectionCategory() {
+        Candidate existingCandidate = CandidateFactory.construct().get();
+        RunningVote existingRunningVote = RunningVoteFactory.construct()
+                .candidateCategoryId(existingCandidate.getCandidateCategory().getId())
+                .get();
+        UUID voterId = UUID.randomUUID();
+        UUID candidateId = existingCandidate.getId();
+        VoteDto voteDto = new VoteDto(voterId, candidateId);
+
+        Mockito.when(candidateService.fetch(candidateId)).thenReturn(existingCandidate);
+        Mockito.when(runningVoteRepository.findAllByCandidateCategoryId(existingCandidate.getCandidateCategory().getId()))
+                .thenReturn(Optional.of(Collections.singletonList(existingRunningVote)));
 
         voteService.vote(voteDto);
     }
