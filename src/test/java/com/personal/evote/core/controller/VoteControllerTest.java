@@ -1,6 +1,7 @@
 package com.personal.evote.core.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.personal.evote.core.exception.IllegalVoterException;
 import com.personal.evote.core.model.RunningVote;
 import com.personal.evote.core.model.dto.VoteDto;
 import com.personal.evote.core.service.VoteService;
@@ -56,6 +57,19 @@ public class VoteControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(voteDto)))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void vote_expectReturnNotAcceptable_whenCandidateAlreadyVoteForRespectedCategory() throws Exception {
+        RunningVote runningVote = RunningVoteFactory.construct().get();
+        VoteDto voteDto = new VoteDto(runningVote.getVoterId(), runningVote.getCandidateId());
+
+        Mockito.when(voteService.vote(voteDto)).thenThrow(IllegalVoterException.class);
+
+        mockMvc.perform(post("/vote")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(voteDto)))
+                .andExpect(status().isNotAcceptable());
     }
 
 }
