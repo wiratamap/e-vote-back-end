@@ -38,7 +38,7 @@ public class CandidateServiceTest {
     }
 
     @Test(expected = CandidateNotFoundException.class)
-    public void fetch_expectReturnNull_whenCandidateDataIsNotAvailable() {
+    public void fetch_expectThrowException_whenCandidateDataIsNotAvailable() {
         UUID candidateToBeSearch = UUID.randomUUID();
 
         Mockito.when(candidateRepository.findById(candidateToBeSearch)).thenReturn(Optional.empty());

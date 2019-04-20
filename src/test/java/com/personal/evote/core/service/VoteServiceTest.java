@@ -3,7 +3,9 @@ package com.personal.evote.core.service;
 import com.personal.evote.core.model.RunningVote;
 import com.personal.evote.core.model.dto.VoteDto;
 import com.personal.evote.core.repository.RunningVoteRepository;
+import com.personal.evote.factory.core.RunningVoteFactory;
 import com.personal.evote.factory.lookup.candidate.CandidateFactory;
+import com.personal.evote.lookup.candidate.exception.CandidateNotFoundException;
 import com.personal.evote.lookup.candidate.model.Candidate;
 import com.personal.evote.lookup.candidate.service.CandidateService;
 import org.junit.Before;
@@ -41,19 +43,27 @@ public class VoteServiceTest {
     public void vote_expectReturnSavedRunningVote_whenCandidateIsValid() {
         Candidate existingCandidate = CandidateFactory.construct().get();
         UUID voterId = UUID.randomUUID();
-        UUID candidateId = UUID.randomUUID();
+        UUID candidateId = existingCandidate.getId();
         VoteDto voteDto = new VoteDto(voterId, candidateId);
 
         Mockito.when(candidateService.fetch(candidateId)).thenReturn(existingCandidate);
 
-        RunningVote expectedRunningVote = RunningVote.builder()
-                .voterId(voterId)
-                .candidateId(existingCandidate.getId())
-                .build();
+        RunningVote expectedRunningVote = RunningVoteFactory.construct().voterId(voterId).candidateId(candidateId).get();
 
         RunningVote savedRunningVote = voteService.vote(voteDto);
 
         assertEquals(expectedRunningVote, savedRunningVote);
+    }
+
+    @Test(expected = CandidateNotFoundException.class)
+    public void vote_expectThrowException_whenCandidateIsInvalid() {
+        UUID voterId = UUID.randomUUID();
+        UUID candidateId = UUID.randomUUID();
+        VoteDto voteDto = new VoteDto(voterId, candidateId);
+
+        Mockito.when(candidateService.fetch(candidateId)).thenThrow(CandidateNotFoundException.class);
+
+        voteService.vote(voteDto);
     }
 
 }
