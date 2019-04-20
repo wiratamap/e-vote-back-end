@@ -16,7 +16,7 @@ public class VoteService {
 
     private final CandidateService candidateService;
 
-    RunningVote vote(VoteDto voteDto) {
+    public RunningVote vote(VoteDto voteDto) {
         Candidate existingCandidate = candidateService.fetch(voteDto.getCandidateId());
 
         RunningVote runningVote = RunningVote.builder()
