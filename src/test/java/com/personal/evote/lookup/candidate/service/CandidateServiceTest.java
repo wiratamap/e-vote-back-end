@@ -1,5 +1,6 @@
 package com.personal.evote.lookup.candidate.service;
 
+import com.personal.evote.lookup.candidate.exception.CandidateNotFoundException;
 import com.personal.evote.lookup.candidate.model.Candidate;
 import com.personal.evote.lookup.candidate.repository.CandidateRepository;
 import com.personal.evote.lookup.candidatecategory.model.CandidateCategory;
@@ -49,14 +50,12 @@ public class CandidateServiceTest {
         assertEquals(expectedCandidate, availableCandidate);
     }
 
-    @Test
+    @Test(expected = CandidateNotFoundException.class)
     public void fetch_expectReturnNull_whenCandidateDataIsNotAvailable() {
         UUID candidateToBeSearch = UUID.randomUUID();
 
         Mockito.when(candidateRepository.findById(candidateToBeSearch)).thenReturn(Optional.empty());
 
-        Candidate availableCandidate = candidateService.fetch(candidateToBeSearch);
-
-        assertNull(availableCandidate);
+        candidateService.fetch(candidateToBeSearch);
     }
 }
