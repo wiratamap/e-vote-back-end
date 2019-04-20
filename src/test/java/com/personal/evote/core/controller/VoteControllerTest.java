@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -34,6 +35,9 @@ public class VoteControllerTest {
 
     private static ObjectMapper objectMapper = new ObjectMapper();
 
+    @Value(value = "${request.mapping.path.vote}")
+    private String voteRequestMappingPath;
+
     @Test
     public void vote_expectReturnCreated_whenCandidateIsValid() throws Exception {
         RunningVote runningVote = RunningVoteFactory.construct().get();
@@ -41,7 +45,7 @@ public class VoteControllerTest {
 
         Mockito.when(voteService.vote(voteDto)).thenReturn(runningVote);
 
-        mockMvc.perform(post("/vote")
+        mockMvc.perform(post(voteRequestMappingPath)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(voteDto)))
                 .andExpect(status().isCreated());
@@ -53,7 +57,7 @@ public class VoteControllerTest {
 
         Mockito.when(voteService.vote(voteDto)).thenThrow(CandidateNotFoundException.class);
 
-        mockMvc.perform(post("/vote")
+        mockMvc.perform(post(voteRequestMappingPath)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(voteDto)))
                 .andExpect(status().isNotFound());
@@ -66,7 +70,7 @@ public class VoteControllerTest {
 
         Mockito.when(voteService.vote(voteDto)).thenThrow(IllegalVoterException.class);
 
-        mockMvc.perform(post("/vote")
+        mockMvc.perform(post(voteRequestMappingPath)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(voteDto)))
                 .andExpect(status().isNotAcceptable());
