@@ -10,5 +10,5 @@ import java.util.UUID;
 
 @Repository
 public interface RunningVoteRepository extends JpaRepository<RunningVote, UUID> {
-    Optional<List<RunningVote>> findAllByCandidateCategoryId(UUID candidateCategoryId);
+    Optional<List<RunningVote>> findAllByCandidateCategoryIdAndVoterId(UUID candidateCategoryId, UUID voterId);
 }
