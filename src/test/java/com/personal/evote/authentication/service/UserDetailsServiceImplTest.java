@@ -1,6 +1,5 @@
 package com.personal.evote.authentication.service;
 
-import com.apple.eawt.Application;
 import com.personal.evote.factory.lookup.appuser.ApplicationUserFactory;
 import com.personal.evote.lookup.appuser.model.ApplicationUser;
 import com.personal.evote.lookup.appuser.repository.ApplicationUserRepository;
