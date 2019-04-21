@@ -4,6 +4,8 @@ import com.personal.evote.authentication.jwt.JwtProvider;
 import com.personal.evote.authentication.model.dto.JwtResponseDto;
 import com.personal.evote.authentication.model.dto.LoginRequestDto;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,8 +25,12 @@ public class AuthenticationController {
 
     private final JwtProvider jwtProvider;
 
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
+
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody LoginRequestDto loginRequestDto) {
+        logger.info("Attempt login to system: {}", loginRequestDto);
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequestDto.getUsername(),
