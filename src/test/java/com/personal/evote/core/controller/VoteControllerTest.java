@@ -1,11 +1,16 @@
 package com.personal.evote.core.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.personal.evote.authentication.configuration.WebSecurityConfigurer;
+import com.personal.evote.authentication.jwt.JwtAuthenticationEntryPoint;
+import com.personal.evote.authentication.jwt.JwtProvider;
+import com.personal.evote.authentication.service.UserDetailsServiceImpl;
 import com.personal.evote.core.exception.IllegalVoterException;
 import com.personal.evote.core.model.RunningVote;
 import com.personal.evote.core.model.dto.VoteDto;
 import com.personal.evote.core.service.VoteService;
 import com.personal.evote.factory.core.RunningVoteFactory;
+import com.personal.evote.lookup.appuser.repository.ApplicationUserRepository;
 import com.personal.evote.lookup.candidate.exception.CandidateNotFoundException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,7 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -25,8 +32,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(VoteController.class)
+@Import({WebSecurityConfigurer.class, UserDetailsServiceImpl.class, JwtAuthenticationEntryPoint.class})
+@MockBean({ApplicationUserRepository.class, JwtProvider.class})
+@WithMockUser("john.doe")
 public class VoteControllerTest {
-
     @Autowired
     private MockMvc mockMvc;
 

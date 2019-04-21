@@ -9,6 +9,7 @@ This application was built using TDD (Test Driven Development) practice.
 2. Spring Boot
 3. Jpa Repository & Hibernate
 4. Postgres
+5. Spring Security with JWT
 
 ##### Run your application
 `mvn spring-boot:run` 
