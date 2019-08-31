@@ -23,7 +23,8 @@ public class VoteService {
     public RunningVote vote(VoteDto voteDto) {
         Candidate existingCandidate = candidateService.fetch(voteDto.getCandidateId());
 
-        Optional<List<RunningVote>> existingRunningVotes = runningVoteRepository.findAllByCandidateCategoryId(existingCandidate.getCandidateCategory().getId());
+        Optional<List<RunningVote>> existingRunningVotes = runningVoteRepository
+                .findAllByCandidateCategoryIdAndVoterId(existingCandidate.getCandidateCategory().getId(), voteDto.getVoterId());
 
         if (existingRunningVotes.isPresent()) {
             throw new IllegalVoterException();
