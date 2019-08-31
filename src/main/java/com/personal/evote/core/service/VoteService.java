@@ -9,7 +9,6 @@ import com.personal.evote.lookup.appuser.service.ApplicationUserService;
 import com.personal.evote.lookup.candidate.model.Candidate;
 import com.personal.evote.lookup.candidate.service.CandidateService;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 

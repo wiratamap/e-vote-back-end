@@ -101,7 +101,8 @@ public class VoteServiceTest {
 
         Mockito.when(applicationUserService.fetchByUsername(applicationUser.getUsername())).thenReturn(applicationUser);
         Mockito.when(candidateService.fetch(candidateId)).thenReturn(existingCandidate);
-        Mockito.when(runningVoteRepository.findAllByCandidateCategoryIdAndVoterId(existingCandidate.getCandidateCategory().getId(), applicationUser.getId()))
+        Mockito.when(runningVoteRepository
+                .findAllByCandidateCategoryIdAndVoterId(existingCandidate.getCandidateCategory().getId(), applicationUser.getId()))
                 .thenReturn(Optional.of(Collections.singletonList(existingRunningVote)));
 
         voteService.vote(voteDto);
