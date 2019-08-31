@@ -5,7 +5,10 @@ import com.personal.evote.core.model.RunningVote;
 import com.personal.evote.core.model.dto.VoteDto;
 import com.personal.evote.core.repository.RunningVoteRepository;
 import com.personal.evote.factory.core.RunningVoteFactory;
+import com.personal.evote.factory.lookup.appuser.ApplicationUserFactory;
 import com.personal.evote.factory.lookup.candidate.CandidateFactory;
+import com.personal.evote.lookup.appuser.model.ApplicationUser;
+import com.personal.evote.lookup.appuser.service.ApplicationUserService;
 import com.personal.evote.lookup.candidate.exception.CandidateNotFoundException;
 import com.personal.evote.lookup.candidate.model.Candidate;
 import com.personal.evote.lookup.candidate.service.CandidateService;
@@ -16,6 +19,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -37,22 +43,30 @@ public class VoteServiceTest {
     @Mock
     private CandidateService candidateService;
 
+    @Mock
+    private ApplicationUserService applicationUserService;
+
     @Before
     public void setUp() {
         Mockito.when(runningVoteRepository.save(any(RunningVote.class))).then(returnsFirstArg());
+
+        ApplicationUser applicationUser = ApplicationUserFactory.construct().get();
+        Authentication authentication = new UsernamePasswordAuthenticationToken(applicationUser.getUsername(), null);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
     @Test
     public void vote_expectReturnSavedRunningVote_whenCandidateIsValid() {
         Candidate existingCandidate = CandidateFactory.construct().get();
-        UUID voterId = UUID.randomUUID();
+        ApplicationUser applicationUser = ApplicationUserFactory.construct().get();
         UUID candidateId = existingCandidate.getId();
-        VoteDto voteDto = new VoteDto(voterId, candidateId);
+        VoteDto voteDto = new VoteDto(candidateId);
 
+        Mockito.when(applicationUserService.fetchByUsername(applicationUser.getUsername())).thenReturn(applicationUser);
         Mockito.when(candidateService.fetch(candidateId)).thenReturn(existingCandidate);
 
         RunningVote expectedRunningVote = RunningVoteFactory.construct()
-                .voterId(voterId)
+                .voterId(applicationUser.getId())
                 .candidateId(candidateId)
                 .candidateCategoryId(existingCandidate.getCandidateCategory().getId())
                 .get();
@@ -64,10 +78,12 @@ public class VoteServiceTest {
 
     @Test(expected = CandidateNotFoundException.class)
     public void vote_expectThrowException_whenCandidateIsInvalid() {
-        UUID voterId = UUID.randomUUID();
-        UUID candidateId = UUID.randomUUID();
-        VoteDto voteDto = new VoteDto(voterId, candidateId);
+        ApplicationUser applicationUser = ApplicationUserFactory.construct().get();
 
+        UUID candidateId = UUID.randomUUID();
+        VoteDto voteDto = new VoteDto(candidateId);
+
+        Mockito.when(applicationUserService.fetchByUsername(applicationUser.getUsername())).thenReturn(applicationUser);
         Mockito.when(candidateService.fetch(candidateId)).thenThrow(CandidateNotFoundException.class);
 
         voteService.vote(voteDto);
@@ -79,13 +95,14 @@ public class VoteServiceTest {
         RunningVote existingRunningVote = RunningVoteFactory.construct()
                 .candidateCategoryId(existingCandidate.getCandidateCategory().getId())
                 .get();
-        UUID voterId = UUID.randomUUID();
+        ApplicationUser applicationUser = ApplicationUserFactory.construct().get();
         UUID candidateId = existingCandidate.getId();
-        VoteDto voteDto = new VoteDto(voterId, candidateId);
+        VoteDto voteDto = new VoteDto(candidateId);
 
+        Mockito.when(applicationUserService.fetchByUsername(applicationUser.getUsername())).thenReturn(applicationUser);
         Mockito.when(candidateService.fetch(candidateId)).thenReturn(existingCandidate);
         Mockito.when(runningVoteRepository
-                .findAllByCandidateCategoryIdAndVoterId(existingCandidate.getCandidateCategory().getId(), voteDto.getVoterId()))
+                .findAllByCandidateCategoryIdAndVoterId(existingCandidate.getCandidateCategory().getId(), applicationUser.getId()))
                 .thenReturn(Optional.of(Collections.singletonList(existingRunningVote)));
 
         voteService.vote(voteDto);

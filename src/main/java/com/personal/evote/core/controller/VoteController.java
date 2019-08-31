@@ -2,7 +2,7 @@ package com.personal.evote.core.controller;
 
 import com.personal.evote.core.model.dto.VoteDto;
 import com.personal.evote.core.service.VoteService;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/vote")
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class VoteController {
 
     private final VoteService voteService;

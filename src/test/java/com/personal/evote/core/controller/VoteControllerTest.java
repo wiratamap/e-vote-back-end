@@ -50,7 +50,7 @@ public class VoteControllerTest {
     @Test
     public void vote_expectReturnCreated_whenCandidateIsValid() throws Exception {
         RunningVote runningVote = RunningVoteFactory.construct().get();
-        VoteDto voteDto = new VoteDto(runningVote.getVoterId(), runningVote.getCandidateId());
+        VoteDto voteDto = new VoteDto(runningVote.getCandidateId());
 
         Mockito.when(voteService.vote(voteDto)).thenReturn(runningVote);
 
@@ -62,7 +62,7 @@ public class VoteControllerTest {
 
     @Test
     public void vote_expectReturnNotFound_whenCandidateIsInvalid() throws Exception {
-        VoteDto voteDto = new VoteDto(UUID.randomUUID(), UUID.randomUUID());
+        VoteDto voteDto = new VoteDto(UUID.randomUUID());
 
         Mockito.when(voteService.vote(voteDto)).thenThrow(CandidateNotFoundException.class);
 
@@ -75,7 +75,7 @@ public class VoteControllerTest {
     @Test
     public void vote_expectReturnNotAcceptable_whenCandidateAlreadyVoteForRespectedCategory() throws Exception {
         RunningVote runningVote = RunningVoteFactory.construct().get();
-        VoteDto voteDto = new VoteDto(runningVote.getVoterId(), runningVote.getCandidateId());
+        VoteDto voteDto = new VoteDto(runningVote.getCandidateId());
 
         Mockito.when(voteService.vote(voteDto)).thenThrow(IllegalVoterException.class);
 
